@@ -1,4 +1,4 @@
-package luxoft.project.viewmodel.practice
+package luxoft.project.viewmodel.practice.DataObjects
 
 import com.google.gson.annotations.SerializedName
 

@@ -1,10 +1,11 @@
-package luxoft.project.viewmodel.practice
+package luxoft.project.viewmodel.practice.Adapters
 
-import android.support.v7.widget.RecyclerView
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.item_dog.view.*
 import luxoft.project.viewmodel.R
@@ -18,7 +19,13 @@ class DogsAdapter (var images: List<String>) : RecyclerView.Adapter<DogsAdapter.
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        return ViewHolder(layoutInflater.inflate(R.layout.item_dog, parent, false))
+        return ViewHolder(
+            layoutInflater.inflate(
+                R.layout.item_dog,
+                parent,
+                false
+            )
+        )
     }
 
     fun dataChanged(images: List<String>){

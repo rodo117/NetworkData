@@ -1,28 +1,31 @@
-package luxoft.project.viewmodel
+package luxoft.project.viewmodel.practice.Activities
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.SearchView
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.appcompat.widget.SearchView
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import luxoft.project.viewmodel.practice.APIService
-import luxoft.project.viewmodel.practice.DogsAdapter
-import luxoft.project.viewmodel.practice.DogsResponse
-import luxoft.project.viewmodel.practice.DogsViewModel
+import luxoft.project.viewmodel.R
+import luxoft.project.viewmodel.practice.Interfaces.APIService
+import luxoft.project.viewmodel.practice.Adapters.DogsAdapter
+import luxoft.project.viewmodel.practice.DataObjects.Dogs
+import luxoft.project.viewmodel.practice.DataObjects.DogsResponse
+import luxoft.project.viewmodel.practice.ViewModels.DogsViewModel
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import kotlin.coroutines.coroutineContext
 
 class MainActivity : AppCompatActivity(),SearchView.OnQueryTextListener {
 
     var imagesPuppies:List<String> = ArrayList<String> ()
-    lateinit var dogsAdapter:DogsAdapter
+    lateinit var dogsAdapter: DogsAdapter
     private lateinit var model: DogsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +37,10 @@ class MainActivity : AppCompatActivity(),SearchView.OnQueryTextListener {
         rvDogs.setHasFixedSize(true)
         rvDogs.layoutManager = LinearLayoutManager(this)
         rvDogs.adapter = dogsAdapter
+
+
+        model = ViewModelProviders.of(this).get(DogsViewModel(application)::class.java)
+        model.allWords.observe(this, Observer { dogs->let { println(dogs) } })
 
     }
 
@@ -55,7 +62,6 @@ class MainActivity : AppCompatActivity(),SearchView.OnQueryTextListener {
 
     private fun searchByName(query: String?) {
 
-
         GlobalScope.launch {
             try {
 
@@ -64,6 +70,7 @@ class MainActivity : AppCompatActivity(),SearchView.OnQueryTextListener {
                 withContext(Dispatchers.Main) {
                     if (puppies?.status == "success") {
                         initCharacter(puppies)
+                        addDogsToDatabase(puppies)
                     } else {
                         showErrorDialog()
                     }
@@ -76,6 +83,14 @@ class MainActivity : AppCompatActivity(),SearchView.OnQueryTextListener {
 
 
         }
+    }
+
+    private fun addDogsToDatabase(puppies: DogsResponse){
+        puppies.images.forEach{dogReceived->
+            val dog = Dogs(dogReceived)
+            model.insert(dog)
+        }
+
     }
 
 
